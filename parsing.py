@@ -1,6 +1,8 @@
 import re
 import os
 import zipfile
+import time
+
 
 # Regular expressions to extract data from the corpus
 doc_regex = re.compile("<DOC>.*?</DOC>", re.DOTALL)
@@ -27,6 +29,25 @@ for file in allfiles:
             text = "".join(re.findall(text_regex, document))\
                       .replace("<TEXT>", "").replace("</TEXT>", "")\
                       .replace("\n", " ")
+            
+            
+
+            punc = '''!()-[]{};:'"\,<>./?@#$%^&*_~'''
+            no_punct = ""
+            for ele in text:
+              if ele not in punc:
+                    no_punct = no_punct + ele
+            no_punct.lower()
+            
+            
+            # testing code
+            time.sleep(1)
+             
+            print(no_punct.lower())
+            exit()
+            
+
+
 
             # step 1 - lower-case words, remove punctuation, remove stop-words, etc. 
             # step 2 - create tokens 
