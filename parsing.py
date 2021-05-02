@@ -3,7 +3,9 @@ import os
 import zipfile
 import time
 import sys
+from nltk.stem.lancaster import LancasterStemmer
 
+lancaster = LancasterStemmer()
 
 # Regular expressions to extract data from the corpus
 doc_regex = re.compile("<DOC>.*?</DOC>", re.DOTALL)
@@ -54,36 +56,41 @@ for file in allfiles:
             # https://www.geeksforgeeks.org/python-difference-two-lists/
             tokens = [i for i in textList + stopList if i not in textList or i not in stopList]
 
+            for i in range(len(tokens)):
+                tokens[i] = lancaster.stem(tokens[i])
+
+            tokens = [i for i in textList + stopList if i not in textList or i not in stopList]
+
             termIndex = dict()
             docIndex = dict()
 
-            postList = list()
-            postList.append(docno)
-
             for token in tokens:
-                inDoc = 0
                 hashToken = hash(token) % ((sys.maxsize + 1) * 2)
                 if token not in termInfo:
                     info = dict()
+                    postList = list()
+                    postList.append(docno)
                     info['postingList'] = postList
 
                     termInfo[token] = info
 
                     termInfo[token]['numOccur'] = 0
-                    termInfo[token]['numDocs'] = 0
+                    termInfo[token]['numDocs'] = 1
+                else:
+                    if docno not in info['postingList']:
+                        postList = info['postingList']
+                        postList.append(docno)
+                        info['postingList'] = postList
 
                 if token in termIndex:
                     termInfo[token]['numOccur'] = termInfo[token]['numOccur'] + 1
                 else:
                     termInfo[token]['numOccur'] = termInfo[token]['numOccur'] + 1
                     termIndex[token] = hashToken
-                    if inDoc < 2:
-                        termInfo[token]['numDocs'] = termInfo[token]['numDocs'] + 1
-                        ++inDoc
 
             docIndex[docno] = hash(docno) % ((sys.maxsize + 1) * 2)
 
             # testing code
-        time.sleep(10)
+            time.sleep(1)
 
-        exit()
+            exit()
