@@ -24,6 +24,8 @@ for file in allfiles:
         filedata = f.read()
         result = re.findall(doc_regex, filedata)  # Match the <DOC> tags and fetch documents
 
+        termInfo = dict()
+
         for document in result[0:]:
             # Retrieve contents of DOCNO tag
             docno = re.findall(docno_regex, document)[0].replace("<DOCNO>", "").replace("</DOCNO>", "").strip()
@@ -31,8 +33,6 @@ for file in allfiles:
             text = "".join(re.findall(text_regex, document))\
                       .replace("<TEXT>", "").replace("</TEXT>", "")\
                       .replace("\n", " ")
-            
-            
 
             punc = '''!()-[]{};:'"\,<>./?@#$%^&*_~'''
             no_punct = ""
@@ -58,24 +58,33 @@ for file in allfiles:
             termIndex = dict()
             docIndex = dict()
 
+            postList = list()
+            postList.append(docno)
+
             for token in tokens:
                 hashToken = hash(token) % ((sys.maxsize + 1) * 2)
+                if token in termInfo:
+                    print(token)
+                else:
+                    info = dict()
+                    info['postingList'] = postList
+
+                    termInfo[token] = info
+
+                    termInfo[token]['numOccur'] = 0
+                    termInfo[token]['numDocs'] = 0
+
                 if token in termIndex:
+                    termInfo[token]['numOccur'] = termInfo[token]['numOccur'] + 1
                     continue;
                 else:
+                    termInfo[token]['numDocs'] = termInfo[token]['numDocs'] + 1
+                    termInfo[token]['numOccur'] = termInfo[token]['numOccur'] + 1
                     termIndex[token] = hashToken
 
-            #read_index.readIndex()
+            docIndex[docno] = hash(docno) % ((sys.maxsize + 1) * 2)
 
             # testing code
             time.sleep(1)
 
             exit()
-            
-
-
-
-            # step 1 - lower-case words, remove punctuation, remove stop-words, etc. 
-            # step 2 - create tokens 
-            # step 3 - build index
-            
