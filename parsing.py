@@ -2,6 +2,8 @@ import re
 import os
 import zipfile
 import time
+import sys
+import read_index
 
 
 # Regular expressions to extract data from the corpus
@@ -37,13 +39,37 @@ for file in allfiles:
             for ele in text:
               if ele not in punc:
                     no_punct = no_punct + ele
-            no_punct.lower()
-            
-            
+            no_punct = no_punct.lower()
+            text = no_punct
+
+            stopFile = open("stopwords.txt", "r")
+            stopWords = stopFile.read()
+            stopWords = stopWords.replace("\n", " ")
+
+            textList = list(text.split(' '))
+            stopList = list(stopWords.split(' '))
+
+            textList = list(filter(None, textList))
+            stopList = list(filter(None, stopList))
+
+            # https://www.geeksforgeeks.org/python-difference-two-lists/
+            tokens = [i for i in textList + stopList if i not in textList or i not in stopList]
+
+            termIndex = dict()
+            docIndex = dict()
+
+            for token in tokens:
+                hashToken = hash(token) % ((sys.maxsize + 1) * 2)
+                if token in termIndex:
+                    continue;
+                else:
+                    termIndex[token] = hashToken
+
+            #read_index.readIndex()
+
             # testing code
             time.sleep(1)
-             
-            print(no_punct.lower())
+
             exit()
             
 
