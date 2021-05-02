@@ -3,7 +3,6 @@ import os
 import zipfile
 import time
 import sys
-import read_index
 
 
 # Regular expressions to extract data from the corpus
@@ -62,10 +61,9 @@ for file in allfiles:
             postList.append(docno)
 
             for token in tokens:
+                inDoc = 0
                 hashToken = hash(token) % ((sys.maxsize + 1) * 2)
-                if token in termInfo:
-                    print(token)
-                else:
+                if token not in termInfo:
                     info = dict()
                     info['postingList'] = postList
 
@@ -76,15 +74,16 @@ for file in allfiles:
 
                 if token in termIndex:
                     termInfo[token]['numOccur'] = termInfo[token]['numOccur'] + 1
-                    continue;
                 else:
-                    termInfo[token]['numDocs'] = termInfo[token]['numDocs'] + 1
                     termInfo[token]['numOccur'] = termInfo[token]['numOccur'] + 1
                     termIndex[token] = hashToken
+                    if inDoc < 2:
+                        termInfo[token]['numDocs'] = termInfo[token]['numDocs'] + 1
+                        ++inDoc
 
             docIndex[docno] = hash(docno) % ((sys.maxsize + 1) * 2)
 
             # testing code
-            time.sleep(1)
+        time.sleep(10)
 
-            exit()
+        exit()
