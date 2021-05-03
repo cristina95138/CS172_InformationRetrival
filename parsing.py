@@ -65,12 +65,11 @@ def Tokens():
                 tokens = [i for i in tokens + stopList if i not in tokens or i not in stopList]
 
                 docInfo = dict()
-                docInfo['docID'] = 0
-                docInfo['totalTerms'] = 0
+                docInfo['docID'] = hash(docno) % ((sys.maxsize + 1) * 2)
+                docInfo['totalTerms'] = len(tokens)
                 docInfo['distinctTerms'] = 0
 
-                docIndex[docno]['docID'] = hash(docno) % ((sys.maxsize + 1) * 2)
-                docIndex[docno]['totalTerms'] = len(tokens)
+                docIndex[docno] = docInfo
 
                 position = 0
                 distinct = 0
@@ -111,10 +110,8 @@ def Tokens():
                 docIndex[docno]['distinctTerms'] = distinct
 
                 # testing code
-                time.sleep(1)
+                #time.sleep(1)
 
-                exit()
+                #exit()
 
     return termIndex, termInfo, docIndex
-
-termIndex, termInfo, docIndex = Tokens()
