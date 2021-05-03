@@ -104,7 +104,7 @@ def Tokens():
                         termInfo[token]['postingList'][docno]['positions'] = posList
                         termInfo[token]['postingList'][docno]['freq'] = termInfo[token]['postingList'][docno]['freq'] + 1
 
-                    else:
+                    elif token in termIndex:
 
                       if docno in termInfo[token]['postingList']:
                         posList = termInfo[token]['postingList'][docno]['positions']
@@ -114,7 +114,20 @@ def Tokens():
 
                         termInfo[token]['numOccur'] = termInfo[token]['numOccur'] + 1
 
-                      else:
+                      if docno not in termInfo[token]['postingList']:
+                        docNumber = dict()
+                        positions = list()
+                        docNumber['freq'] = 0
+                        docNumber['positions'] = positions
+
+                        termInfo[token]['postingList'][docno] = docNumber
+
+                        posList = termInfo[token]['postingList'][docno]['positions']
+                        posList.append(position)
+                        termInfo[token]['postingList'][docno]['positions'] = posList
+                        termInfo[token]['postingList'][docno]['freq'] = termInfo[token]['postingList'][docno]['freq'] + 1
+
+                        termInfo[token]['numOccur'] = termInfo[token]['numOccur'] + 1
                         termInfo[token]['numDocs'] = termInfo[token]['numDocs'] + 1
 
                     position = position + 1
