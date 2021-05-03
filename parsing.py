@@ -104,6 +104,19 @@ def Tokens():
                         termInfo[token]['postingList'][docno]['positions'] = posList
                         termInfo[token]['postingList'][docno]['freq'] = termInfo[token]['postingList'][docno]['freq'] + 1
 
+                    else:
+
+                      if docno in termInfo[token]['postingList']:
+                        posList = termInfo[token]['postingList'][docno]['positions']
+                        posList.append(position)
+                        termInfo[token]['postingList'][docno]['positions'] = posList
+                        termInfo[token]['postingList'][docno]['freq'] = termInfo[token]['postingList'][docno]['freq'] + 1
+
+                        termInfo[token]['numOccur'] = termInfo[token]['numOccur'] + 1
+
+                      else:
+                        termInfo[token]['numDocs'] = termInfo[token]['numDocs'] + 1
+
                     position = position + 1
 
                 docIndex[docno]['distinctTerms'] = distinct
