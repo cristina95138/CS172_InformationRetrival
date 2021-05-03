@@ -82,26 +82,29 @@ def Tokens():
                         termIndex[token] = hashToken
                         info = dict()
                         postList = dict()
+                        docNumber = dict()
                         positions = list()
-                        postList[0] = 0
-                        postList[1] = 0
-                        postList[2] = positions
+
+                        docNumber['freq'] = 0
+                        docNumber['positions'] = positions
+
+                        postList[docno] = docNumber
+
                         info['numOccur'] = 1
                         info['numDocs'] = 1
                         info['postingList'] = postList
+
                         termInfo[token] = info
 
-                        termInfo[token]['postingList'][0] = docno
-                        posList = termInfo[token]['postingList'][2]
+                        posList = termInfo[token]['postingList'][docno]['positions']
                         posList.append(position)
-                        termInfo[token]['postingList'][2] = posList
-                        termInfo[token]['postingList'][1] = termInfo[token]['postingList'][1] + 1
+                        termInfo[token]['postingList'][docno]['positions'] = posList
+                        termInfo[token]['postingList'][docno]['freq'] = termInfo[token]['postingList'][docno]['freq'] + 1
                     else:
-                        termInfo[token]['numOccur'] = termInfo[token]['numOccur'] + 1
-                        posList = termInfo[token]['postingList'][2]
+                        posList = termInfo[token]['postingList'][docno]['positions']
                         posList.append(position)
-                        termInfo[token]['postingList'][2] = posList
-                        termInfo[token]['postingList'][1] = termInfo[token]['postingList'][1] + 1
+                        termInfo[token]['postingList'][docno]['positions'] = posList
+                        termInfo[token]['postingList'][docno]['freq'] = termInfo[token]['postingList'][docno]['freq'] + 1
 
                     position = position + 1
 

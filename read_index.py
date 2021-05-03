@@ -24,31 +24,32 @@ if (len(sys.argv) == 3):
 
 if (len(sys.argv) == 5):
     inputType1 = sys.argv[1]
-    input1 = sys.argv[2]
     inputType2 = sys.argv[3]
-    input2 = sys.argv[4]
 
     if (inputType1 == '--term'):
-        input1 = sys.argv[2]
-        print('Inverted term for term: ', input1)
-        info = termIndex.get(input1)
+        term = sys.argv[2]
+        print('Inverted term for term: ', term)
+        info = termIndex.get(term)
         print('TERMID: ', info)
 
     if (inputType1 == '--doc'):
-        print('In document: ', input1)
-        info = docIndex.get(input1).get('docID')
+        doc = sys.argv[2]
+        print('In document: ', doc)
+        info = docIndex.get(doc).get('docID')
         print('DOCID: ', info)
 
     if (inputType2 == '--term'):
-        print('Inverted term for term:: ', input2)
-        info = termIndex.get(input2)
+        term = sys.argv[4]
+        print('Inverted term for term: ', term)
+        info = termIndex.get(term)
         print('TERMID: ', info)
 
     if (inputType2 == '--doc'):
-        print('In document: ', input2)
-        info = docIndex.get(input2).get('docID')
+        doc = sys.argv[4]
+        print('In document: ', doc)
+        info = docIndex.get(doc).get('docID')
         print('DOCID: ', info)
 
-    print('Term frequency in document: ')
-    print('Positions: ')
+    print('Term frequency in document: ', termInfo.get(term).get('postingList').get(doc))
+    print('Positions: ', termInfo.get(term).get('postingList').get(doc).get('positions'))
 
