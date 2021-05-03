@@ -5,92 +5,104 @@ import time
 import sys
 from nltk.stem.lancaster import LancasterStemmer
 
-lancaster = LancasterStemmer()
+def Tokens():
+    lancaster = LancasterStemmer()
 
-# Regular expressions to extract data from the corpus
-doc_regex = re.compile("<DOC>.*?</DOC>", re.DOTALL)
-docno_regex = re.compile("<DOCNO>.*?</DOCNO>")
-text_regex = re.compile("<TEXT>.*?</TEXT>", re.DOTALL)
+    # Regular expressions to extract data from the corpus
+    doc_regex = re.compile("<DOC>.*?</DOC>", re.DOTALL)
+    docno_regex = re.compile("<DOCNO>.*?</DOCNO>")
+    text_regex = re.compile("<TEXT>.*?</TEXT>", re.DOTALL)
 
 
-with zipfile.ZipFile("ap89_collection_small.zip", 'r') as zip_ref:
-    zip_ref.extractall()
-   
-# Retrieve the names of all files to be indexed in folder ./ap89_collection_small of the current directory
-for dir_path, dir_names, file_names in os.walk("ap89_collection_small"):
-    allfiles = [os.path.join(dir_path, filename).replace("\\", "/") for filename in file_names if (filename != "readme" and filename != ".DS_Store")]
-    
-for file in allfiles:
-    with open(file, 'r', encoding='ISO-8859-1') as f:
-        filedata = f.read()
-        result = re.findall(doc_regex, filedata)  # Match the <DOC> tags and fetch documents
+    with zipfile.ZipFile("ap89_collection_small.zip", 'r') as zip_ref:
+        zip_ref.extractall()
 
-        termInfo = dict()
+    # Retrieve the names of all files to be indexed in folder ./ap89_collection_small of the current directory
+    for dir_path, dir_names, file_names in os.walk("ap89_collection_small"):
+        allfiles = [os.path.join(dir_path, filename).replace("\\", "/") for filename in file_names if (filename != "readme" and filename != ".DS_Store")]
 
-        for document in result[0:]:
-            # Retrieve contents of DOCNO tag
-            docno = re.findall(docno_regex, document)[0].replace("<DOCNO>", "").replace("</DOCNO>", "").strip()
-            # Retrieve contents of TEXT tag
-            text = "".join(re.findall(text_regex, document))\
-                      .replace("<TEXT>", "").replace("</TEXT>", "")\
-                      .replace("\n", " ")
+    termInfo = dict()
+    docIndex = dict()
+    termIndex = dict()
 
-            punc = '''!()-[]{};:'"\,<>./?@#$%^&*_~'''
-            no_punct = ""
-            for ele in text:
-              if ele not in punc:
-                    no_punct = no_punct + ele
-            no_punct = no_punct.lower()
-            text = no_punct
+    for file in allfiles:
+        with open(file, 'r', encoding='ISO-8859-1') as f:
+            filedata = f.read()
+            result = re.findall(doc_regex, filedata)  # Match the <DOC> tags and fetch documents
 
-            stopFile = open("stopwords.txt", "r")
-            stopWords = stopFile.read()
-            stopWords = stopWords.replace("\n", " ")
+            for document in result[0:]:
+                # Retrieve contents of DOCNO tag
+                docno = re.findall(docno_regex, document)[0].replace("<DOCNO>", "").replace("</DOCNO>", "").strip()
+                # Retrieve contents of TEXT tag
+                text = "".join(re.findall(text_regex, document))\
+                          .replace("<TEXT>", "").replace("</TEXT>", "")\
+                          .replace("\n", " ")
 
-            textList = list(text.split(' '))
-            stopList = list(stopWords.split(' '))
+                punc = '''!()-[]{};:'"\,<>./?@#$%^&*_~'''
+                no_punct = ""
+                for ele in text:
+                  if ele not in punc:
+                        no_punct = no_punct + ele
+                no_punct = no_punct.lower()
+                text = no_punct
 
-            textList = list(filter(None, textList))
-            stopList = list(filter(None, stopList))
+                stopFile = open("stopwords.txt", "r")
+                stopWords = stopFile.read()
+                stopWords = stopWords.replace("\n", " ")
 
-            # https://www.geeksforgeeks.org/python-difference-two-lists/
-            tokens = [i for i in textList + stopList if i not in textList or i not in stopList]
+                textList = list(text.split(' '))
+                stopList = list(stopWords.split(' '))
 
-            for i in range(len(tokens)):
-                tokens[i] = lancaster.stem(tokens[i])
+                textList = list(filter(None, textList))
+                stopList = list(filter(None, stopList))
 
-            tokens = [i for i in textList + stopList if i not in textList or i not in stopList]
+                # https://www.geeksforgeeks.org/python-difference-two-lists/
+                tokens = [i for i in textList + stopList if i not in textList or i not in stopList]
 
-            termIndex = dict()
-            docIndex = dict()
+                for i in range(len(tokens)):
+                    tokens[i] = lancaster.stem(tokens[i])
 
-            for token in tokens:
-                hashToken = hash(token) % ((sys.maxsize + 1) * 2)
-                if token not in termInfo:
-                    info = dict()
-                    postList = list()
-                    postList.append(docno)
-                    info['postingList'] = postList
+                tokens = [i for i in tokens + stopList if i not in tokens or i not in stopList]
 
-                    termInfo[token] = info
+                docIndex[docno] = hash(docno) % ((sys.maxsize + 1) * 2)
 
-                    termInfo[token]['numOccur'] = 0
-                    termInfo[token]['numDocs'] = 1
-                else:
-                    if docno not in info['postingList']:
-                        postList = info['postingList']
-                        postList.append(docno)
+                position = 0
+
+                for token in tokens:
+                    hashToken = hash(token) % ((sys.maxsize + 1) * 2)
+
+                    if token not in termIndex:
+                        termIndex[token] = hashToken
+                        info = dict()
+                        postList = dict()
+                        positions = list()
+                        postList['postDocNum'] = 0
+                        postList['freq'] = 0
+                        postList['positions'] = positions
+                        info['numOccur'] = 0
+                        info['numDocs'] = 0
                         info['postingList'] = postList
+                        termInfo[token] = info
 
-                if token in termIndex:
-                    termInfo[token]['numOccur'] = termInfo[token]['numOccur'] + 1
-                else:
-                    termInfo[token]['numOccur'] = termInfo[token]['numOccur'] + 1
-                    termIndex[token] = hashToken
+                        termInfo[token]['postingList']['postDocNum'] = docno
+                        posList = termInfo[token]['postingList']['positions']
+                        posList.append(position)
+                        termInfo[token]['postingList']['positions'] = posList
+                        termInfo[token]['numDocs'] = termInfo[token]['numDocs'] + 1
+                        termInfo[token]['numOccur'] = termInfo[token]['numOccur'] + 1
+                    else:
+                        termInfo[token]['numOccur'] = termInfo[token]['numOccur'] + 1
+                        posList = termInfo[token]['postingList']['positions']
+                        posList.append(position)
+                        termInfo[token]['postingList']['positions'] = posList
 
-            docIndex[docno] = hash(docno) % ((sys.maxsize + 1) * 2)
+                    ++position
 
-            # testing code
-            time.sleep(1)
+                # testing code
+                time.sleep(1)
 
-            exit()
+                exit()
+
+    return termIndex, termInfo, docIndex
+
+termIndex, termInfo, docIndex = Tokens()
