@@ -17,6 +17,7 @@ key -> value
 We then used these data structures in order to retrieve the required information when the user passes in their information in the command line.
 
 ###### Language used, how to run your code, if you attempted the extra credit (stemming), etc. 
+
 Language used: Python
 
 How to run code: python3 read_index.py *input*
