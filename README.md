@@ -6,5 +6,7 @@
 ###### Provide a short explanation of your design
 ###### Language used, how to run your code, if you attempted the extra credit (stemming), etc. 
 Language used: Python
+
 How to run code: python read_index.py input
+
 Extra Credit: stemming
