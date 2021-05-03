@@ -90,17 +90,15 @@ def Tokens():
 
                         postList[docno] = docNumber
 
-                        info['numOccur'] = 1
-                        info['numDocs'] = 1
+                        info['numOccur'] = 0
+                        info['numDocs'] = 0
                         info['postingList'] = postList
 
                         termInfo[token] = info
 
-                        posList = termInfo[token]['postingList'][docno]['positions']
-                        posList.append(position)
-                        termInfo[token]['postingList'][docno]['positions'] = posList
-                        termInfo[token]['postingList'][docno]['freq'] = termInfo[token]['postingList'][docno]['freq'] + 1
-                    else:
+                        termInfo[token]['numOccur'] = termInfo[token]['numOccur'] + 1
+                        termInfo[token]['numDocs'] = termInfo[token]['numDocs'] + 1
+
                         posList = termInfo[token]['postingList'][docno]['positions']
                         posList.append(position)
                         termInfo[token]['postingList'][docno]['positions'] = posList

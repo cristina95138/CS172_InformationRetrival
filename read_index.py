@@ -52,4 +52,3 @@ if (len(sys.argv) == 5):
 
     print('Term frequency in document: ', termInfo.get(term).get('postingList').get(doc))
     print('Positions: ', termInfo.get(term).get('postingList').get(doc).get('positions'))
-
