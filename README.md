@@ -7,6 +7,6 @@
 ###### Language used, how to run your code, if you attempted the extra credit (stemming), etc. 
 Language used: Python
 
-How to run code: python3 read_index.py *input
+How to run code: python3 read_index.py *input*
 
 Extra Credit: stemming
