@@ -64,39 +64,51 @@ def Tokens():
 
                 tokens = [i for i in tokens + stopList if i not in tokens or i not in stopList]
 
-                docIndex[docno] = hash(docno) % ((sys.maxsize + 1) * 2)
+                docInfo = dict()
+                docInfo['docID'] = 0
+                docInfo['totalTerms'] = 0
+                docInfo['distinctTerms'] = 0
+
+                docIndex[docno]['docID'] = hash(docno) % ((sys.maxsize + 1) * 2)
+                docIndex[docno]['totalTerms'] = len(tokens)
 
                 position = 0
+                distinct = 0
 
                 for token in tokens:
                     hashToken = hash(token) % ((sys.maxsize + 1) * 2)
 
                     if token not in termIndex:
+                        distinct = distinct + 1
                         termIndex[token] = hashToken
                         info = dict()
                         postList = dict()
                         positions = list()
-                        postList['postDocNum'] = 0
-                        postList['freq'] = 0
-                        postList['positions'] = positions
+                        postList[0] = 0
+                        postList[1] = 0
+                        postList[2] = positions
                         info['numOccur'] = 0
                         info['numDocs'] = 0
                         info['postingList'] = postList
                         termInfo[token] = info
 
-                        termInfo[token]['postingList']['postDocNum'] = docno
-                        posList = termInfo[token]['postingList']['positions']
+                        termInfo[token]['postingList'][0] = docno
+                        posList = termInfo[token]['postingList'][2]
                         posList.append(position)
-                        termInfo[token]['postingList']['positions'] = posList
+                        termInfo[token]['postingList'][2] = posList
                         termInfo[token]['numDocs'] = termInfo[token]['numDocs'] + 1
                         termInfo[token]['numOccur'] = termInfo[token]['numOccur'] + 1
+                        termInfo[token]['postingList'][1] = termInfo[token]['postingList'][1] + 1
                     else:
                         termInfo[token]['numOccur'] = termInfo[token]['numOccur'] + 1
-                        posList = termInfo[token]['postingList']['positions']
+                        posList = termInfo[token]['postingList'][2]
                         posList.append(position)
-                        termInfo[token]['postingList']['positions'] = posList
+                        termInfo[token]['postingList'][2] = posList
+                        termInfo[token]['postingList'][1] = termInfo[token]['postingList'][1] + 1
 
-                    ++position
+                    position = position + 1
+
+                docIndex[docno]['distinctTerms'] = distinct
 
                 # testing code
                 time.sleep(1)

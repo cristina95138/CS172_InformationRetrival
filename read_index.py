@@ -17,10 +17,10 @@ if (len(sys.argv) == 3):
 
     if (inputType1 == '--doc'):
         print('Listing for document: ', input1)
-        info = docIndex.get(input1)
+        info = docIndex.get(input1).get('docID')
         print('DOCID: ', info)
-        print('Distinct terms: ')
-        print('Total terms: ')
+        print('Distinct terms: ', docIndex.get(input1).get('distinctTerms'))
+        print('Total terms: ', docIndex.get(input1).get('totalTerms'))
 
 if (len(sys.argv) == 5):
     inputType1 = sys.argv[1]
@@ -29,13 +29,14 @@ if (len(sys.argv) == 5):
     input2 = sys.argv[4]
 
     if (inputType1 == '--term'):
+        input1 = sys.argv[2]
         print('Inverted term for term: ', input1)
         info = termIndex.get(input1)
         print('TERMID: ', info)
 
     if (inputType1 == '--doc'):
         print('In document: ', input1)
-        info = docIndex.get(input1)
+        info = docIndex.get(input1).get('docID')
         print('DOCID: ', info)
 
     if (inputType2 == '--term'):
@@ -45,7 +46,7 @@ if (len(sys.argv) == 5):
 
     if (inputType2 == '--doc'):
         print('In document: ', input2)
-        info = docIndex.get(input2)
+        info = docIndex.get(input2).get('docID')
         print('DOCID: ', info)
 
     print('Term frequency in document: ')
