@@ -36,7 +36,7 @@ for query in splitQueries:
 
     for word in query[1:]:
         print(word)
-        if(termInfo.get(word) != None):
+        if termInfo.get(word) != None:
             print('Number of documents containing term: ', termInfo.get(word).get('numDocs'))
             print('\n')
 
