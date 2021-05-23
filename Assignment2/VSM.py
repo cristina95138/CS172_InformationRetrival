@@ -17,3 +17,11 @@ def tfidf(docs, query):
     cosineSimilarity = cosine_similarity(query_tfids, docTransform).flatten()
 
     return cosineSimilarity
+     file1 = open('query_list.txt','r')
+
+    
+    f = open("output.txt", "a")
+    f.write(docIndex.get(" Q0 " + input1).get('docID))
+    f.write(cosineSimilarity + " Exp \n") 
+    f.close()
+    
