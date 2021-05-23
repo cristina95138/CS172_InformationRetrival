@@ -19,7 +19,7 @@ termIndex, termInfo, docIndex = parsing.Tokens()
 
 def tfidf(doc, query):
     vectorizer = TfidfVectorizer()
-    docTransform = vectorizer.fit_transform(docs)
+    docTransform = vectorizer.fit_transform(doc)
 
     query_tfids = vectorizer.transform([query])
     cosineSimilarity = cosine_similarity(query_tfids, docTransform).flatten()
