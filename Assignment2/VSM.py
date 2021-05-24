@@ -52,6 +52,7 @@ for query in queries:
     splitQueries.append(query)
 
 for query in newQueries:
+    rankHeap = []
     allKeys = []
     splitQueryKeys = []
     splitQueryForKeys = query.split()
@@ -66,8 +67,6 @@ for query in newQueries:
         queryNum = query[0] + query[1] + query[2]
     else:
         queryNum = query[0] + query[1]
-
-    rankHeap = []
 
     for doc in allKeys:
         splitString = doc.split('-', 1)
