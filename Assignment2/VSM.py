@@ -3,11 +3,15 @@ import re
 import os
 import heapq
 #import read_index
-#import sys
+import sys
 import string
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from nltk.stem.lancaster import LancasterStemmer
+
+if (len(sys.argv) == 3):
+   queryFile = sys.argv[1]
+   resultsFile = sys.argv[2]
 
 # Regular expressions to extract data from the corpus
 doc_regex = re.compile("<DOC>.*?</DOC>", re.DOTALL)
@@ -18,14 +22,22 @@ lancaster = LancasterStemmer()
 
 termIndex, termInfo, docIndex = parsing.Tokens()
 
+stopFile = open("stopwords.txt", "r")
+stopWords = stopFile.read()
+stopWords = stopWords.replace("\n", " ")
+stops = []
+
+for word in stopWords:
+    stops.append(word)
+
 def tfidf(doc, query):
-    vectorizer = TfidfVectorizer()
+    vectorizer = TfidfVectorizer(stop_words=stops)
     docTransform = vectorizer.fit_transform([doc])
 
     query_tfidfs = vectorizer.transform([query])
     cosineSimilarity = cosine_similarity(query_tfidfs, docTransform).flatten()
 
-    return cosineSimilarity.max()
+    return cosineSimilarity
 
 queries = []
 splitQueries = []
@@ -63,10 +75,7 @@ for query in newQueries:
                 if key not in allKeys:
                     allKeys.append(key)
 
-    if query[2] == 0:
-        queryNum = query[0] + query[1] + query[2]
-    else:
-        queryNum = query[0] + query[1]
+    queryNum = splitQueryForKeys[0]
 
     for doc in allKeys:
         splitString = doc.split('-', 1)
@@ -99,7 +108,7 @@ for query in newQueries:
                 if not text.isspace():
                     #text = text.split(' ')
                     tfidf_val = tfidf(text, fullQuery)
-                    heapq.heappush(rankHeap, (tfidf_val, doc))
+                    heapq.heappush(rankHeap, (tfidf_val[0], doc))
                     heapq._heapify_max(rankHeap)
 
     rank = 1
@@ -108,23 +117,20 @@ for query in newQueries:
         if rank == 11:
             break
         rankInfo = heapq._heappop_max(rankHeap)
-        print(queryNum, ' Q0 ', rankInfo[1], ' ', rank, ' ', rankInfo[0], ' Exp ')
+        output = str(queryNum) + ' Q0 ' + str(rankInfo[1]) + ' ' + str(rank) + ' ' + str(rankInfo[0]) + ' Exp\n'
+        with open(resultsFile, 'a') as f:
+            f.write(output)
         rank = rank + 1
 
-    print('\n')
+    output = '\n'
+    with open(resultsFile, 'a') as f:
+        f.write(output)
 
-
-#if (len(sys.argv) == 3):
-#    queryFile = sys.argv[1]
-#    resultsFile = sys.argv[2]
+f.close()
 
 #def file_len(file)
 #	with open(file) as f: 
 #		for i,l in enumerate(f);
 #			pass
 #	return i + 1
-
-    #f = open("output.txt", "a")
-    #f.write(docIndex.get(" Q0 " + input1).get('docID))
-   #f.write(cosineSimila
     
