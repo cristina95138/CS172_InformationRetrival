@@ -1,4 +1,4 @@
-# CS172 - Assignment 1 (Tokenization)
+# CS172 - Assignment 2
 
 ## Team member 1 - Cristina Lawson
 ## Team member 2 - Shray GRover
@@ -11,4 +11,4 @@ According to the specs, we were determined to use imported extensions calculate 
 
 Language used: Python
 
-How to run code: python3 VSM.py
+How to run code: python3 VSM.py output.txt
