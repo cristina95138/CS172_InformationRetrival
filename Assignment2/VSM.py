@@ -1,6 +1,7 @@
 import parsing
 import re
 import os
+import heapq
 #import read_index
 #import sys
 import string
@@ -19,7 +20,7 @@ termIndex, termInfo, docIndex = parsing.Tokens()
 
 def tfidf(doc, query):
     vectorizer = TfidfVectorizer()
-    docTransform = vectorizer.fit_transform(doc)
+    docTransform = vectorizer.fit_transform([doc])
 
     query_tfids = vectorizer.transform([query])
     cosineSimilarity = cosine_similarity(query_tfids, docTransform).flatten()
@@ -28,6 +29,7 @@ def tfidf(doc, query):
 
 queries = []
 splitQueries = []
+newQueries = []
 
 file = open('query_list.txt', 'r')
 fileLines = file.readlines()
@@ -40,23 +42,25 @@ for query in queries:
     query = query.replace('.', '')
     query = query.replace('"', '')
     query = query.replace(',', '')
+    newQueries.append(query)
     query = query.split()
 
     for i in range(len(query)):
         query[i] = lancaster.stem(query[i])
+        query[i] = query[i].lower()
 
     splitQueries.append(query)
 
 for query in splitQueries:
-    queryNum = query[0]
-
-    print(queryNum, '\n')
-
-    rankings = dict()
 
     for word in query[1:]:
         if termInfo.get(word) != None:
             allKeys = termInfo.get(word).get('postingList').keys()
+
+for query in newQueries:
+    queryNum = query[0]
+
+    rankHeap = []
 
     for doc in allKeys:
         splitString = doc.split('-', 1)
@@ -74,15 +78,33 @@ for query in splitQueries:
             result = re.findall(doc_regex, filedata)
 
         for document in result[0:]:
-            if document == doc:
-                # Retrieve contents of DOCNO tag
-                docno = re.findall(docno_regex, document)[0].replace("<DOCNO>", "").replace("</DOCNO>", "").strip()
+            # Retrieve contents of DOCNO tag
+            docno = re.findall(docno_regex, document)[0].replace("<DOCNO>", "").replace("</DOCNO>", "").strip()
+
+            splitQuery = query.split('  ', 1)
+            substringQuery = splitQuery[1]
+            fullQuery = substringQuery.lower()
+
+            if docno == doc:
                 # Retrieve contents of TEXT tag
                 text = "".join(re.findall(text_regex, document)) \
                     .replace("<TEXT>", "").replace("</TEXT>", "") \
                     .replace("\n", " ")
 
-                tfidf(text, query)
+                tfidf_val = tfidf(text, fullQuery)
+                heapq.heappush(rankHeap, (tfidf_val[0], doc))
+                heapq._heapify_max(rankHeap)
+
+    rank = 1
+
+    for docNum in rankHeap:
+        if rank == 11:
+            break
+        rankInfo = heapq._heappop_max(rankHeap)
+        print(queryNum, ' Q0 ', rankInfo[1], ' ', rank, ' ', rankInfo[0], ' Exp ')
+        rank = rank + 1
+
+    print('\n')
 
 
 #if (len(sys.argv) == 3):
