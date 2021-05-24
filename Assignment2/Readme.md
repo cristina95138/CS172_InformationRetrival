@@ -1,25 +1,14 @@
 # CS172 - Assignment 1 (Tokenization)
 
-## Team member 1 - Shray Grover
-## Team member 2 - Cristina Lawson
+## Team member 1 - Cristina Lawson
+## Team member 2 - Shray GRover
 
 ###### Provide a short explanation of your design
 
-We implemented a way to tokenize words by first removing punctuation and lowercasing the words, and then stemming the words using an external library.
-
-After this, we implemented an index by making multiple dictionary data structures, listed below:
-
-key -> value
-1. term -> termId
-2. docNo -> docID
-3. term -> docno, docFreq, positions
-
-We then used these data structures in order to retrieve the required information when the user passes in their information in the command line.
+According to the specs, we were determined to use imported extensions calculate tf-idf. Simple open/close file extraction was used for the numbers of the beginning of querys, doc similarity collection (docID) was done using Assignment 1 processes, and score was ranked using a heap queue.
 
 ###### Language used, how to run your code, if you attempted the extra credit (stemming), etc. 
 
 Language used: Python
 
-How to run code: python3 read_index.py *input*
-
-Extra Credit: stemming
+How to run code: python3 VSM.py
