@@ -1,7 +1,7 @@
 # CS172 - Assignment 2
 
 ## Team member 1 - Cristina Lawson
-## Team member 2 - Shray GRover
+## Team member 2 - Shray Grover
 
 ###### Provide a short explanation of your design
 
