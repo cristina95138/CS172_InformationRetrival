@@ -22,10 +22,10 @@ def tfidf(doc, query):
     vectorizer = TfidfVectorizer()
     docTransform = vectorizer.fit_transform([doc])
 
-    query_tfids = vectorizer.transform([query])
-    cosineSimilarity = cosine_similarity(query_tfids, docTransform).flatten()
+    query_tfidfs = vectorizer.transform([query])
+    cosineSimilarity = cosine_similarity(query_tfidfs, docTransform).flatten()
 
-    return cosineSimilarity
+    return cosineSimilarity.max()
 
 queries = []
 splitQueries = []
@@ -51,14 +51,21 @@ for query in queries:
 
     splitQueries.append(query)
 
-for query in splitQueries:
-
-    for word in query[1:]:
-        if termInfo.get(word) != None:
-            allKeys = termInfo.get(word).get('postingList').keys()
-
 for query in newQueries:
-    queryNum = query[0]
+    allKeys = []
+    splitQueryKeys = []
+    splitQueryForKeys = query.split()
+    for word in splitQueryForKeys[1:]:
+        if termInfo.get(word) != None:
+            keys = termInfo.get(word).get('postingList').keys()
+            for key in keys:
+                if key not in allKeys:
+                    allKeys.append(key)
+
+    if query[2] == 0:
+        queryNum = query[0] + query[1] + query[2]
+    else:
+        queryNum = query[0] + query[1]
 
     rankHeap = []
 
@@ -90,10 +97,11 @@ for query in newQueries:
                 text = "".join(re.findall(text_regex, document)) \
                     .replace("<TEXT>", "").replace("</TEXT>", "") \
                     .replace("\n", " ")
-
-                tfidf_val = tfidf(text, fullQuery)
-                heapq.heappush(rankHeap, (tfidf_val[0], doc))
-                heapq._heapify_max(rankHeap)
+                if not text.isspace():
+                    #text = text.split(' ')
+                    tfidf_val = tfidf(text, fullQuery)
+                    heapq.heappush(rankHeap, (tfidf_val, doc))
+                    heapq._heapify_max(rankHeap)
 
     rank = 1
 
