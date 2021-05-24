@@ -16,3 +16,5 @@ According to the specs, we were determined to use imported extensions calculate 
 Language used: Python
 
 How to run code: python3 VSM.py query_list.txt output.txt
+
+Be sure to delete the output.txt file if running more than once because the output only appends and doesn't overwrite the file.
